@@ -511,16 +511,18 @@ Component.register('sw-sales-channel-detail-base', {
             this.salesChannelRepository
                 .get(this.$route.params.id, Context.api, criteria)
                 .then((entity) => {
-                    if (entity.extensions.themes !== undefined && entity.extensions.themes.length >= 1) {
-                        return;
+                    const hasAtLeastOneTheme =
+                        entity.extensions.themes !== undefined
+                        && entity.extensions.themes.length >= 1;
+                    
+                    if (!hasAtLeastOneTheme) {
+                        this.salesChannel.active = false;
+                        this.createNotificationError({
+                            message: this.$tc('sw-sales-channel.detail.messageActivateWithoutThemeError', 0, {
+                                name: this.salesChannel.name || this.placeholder(this.salesChannel, 'name'),
+                            }),
+                        });
                     }
-
-                    this.salesChannel.active = false;
-                    this.createNotificationError({
-                        message: this.$tc('sw-sales-channel.detail.messageActivateWithoutThemeError', 0, {
-                            name: this.salesChannel.name || this.placeholder(this.salesChannel, 'name'),
-                        }),
-                    });
                 });
         },
 
